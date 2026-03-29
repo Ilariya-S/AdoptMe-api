@@ -5,7 +5,10 @@ namespace App\Services\Pets\Controllers;
 use App\Http\Controllers\Controller;
 use App\Services\Pets\Managers\PetManager;
 use App\Services\Pets\Requests\PetRequest;
+use App\Services\Pets\Requests\UpdatePetRequest;
 use Illuminate\Http\JsonResponse;
+use App\Services\Pets\Models\Pet;
+use Illuminate\Http\Request;
 
 class PetController extends Controller
 {
@@ -15,7 +18,8 @@ class PetController extends Controller
 
     public function index(): JsonResponse
     {
-        return response()->json($this->petManager->getCatalog());
+        $pets = Pet::where('status', '!=', 'adopted')->get();
+        return response()->json($pets);
     }
 
     public function show(string $id): JsonResponse
@@ -33,17 +37,33 @@ class PetController extends Controller
         return response()->json($pet, 201);
     }
 
-    public function update(PetRequest $request, string $id): JsonResponse
+    public function update(UpdatePetRequest $request, $id): JsonResponse
     {
-        $pet = $this->petManager->getDetails($id);
-        $updatedPet = $this->petManager->updatePet($pet, $request->validated());
-        return response()->json($updatedPet);
+        $pet = Pet::findOrFail($id);
+
+        $hasActiveApps = $pet->applications()->whereIn('status', ['pending', 'approved'])->exists();
+        if ($hasActiveApps) {
+            return response()->json(['error' => 'Неможливо змінити тварину: на неї є активна або схвалена заявка.'], 400);
+        }
+
+        $pet->update($request->validated());
+        return response()->json($pet);
     }
 
-    public function destroy(string $id): JsonResponse
+    public function destroy(Request $request, $id): JsonResponse
     {
-        $pet = $this->petManager->getDetails($id);
-        $this->petManager->deletePet($pet);
-        return response()->json(['message' => 'Тваринку видалено']);
+        if (!$request->user()->isAdmin()) {
+            return response()->json(['error' => 'Тільки адміністратор може видаляти тварин.'], 403);
+        }
+
+        $pet = Pet::findOrFail($id);
+
+        $hasActiveApps = $pet->applications()->whereIn('status', ['pending', 'approved'])->exists();
+        if ($hasActiveApps) {
+            return response()->json(['error' => 'Неможливо видалити тварину: на неї є активна або схвалена заявка.'], 400);
+        }
+
+        $pet->delete();
+        return response()->json(['message' => 'Тваринку успішно видалено.']);
     }
 }

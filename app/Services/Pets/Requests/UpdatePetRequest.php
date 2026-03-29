@@ -4,7 +4,7 @@ namespace App\Services\Pets\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PetRequest extends FormRequest
+class UpdatePetRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,13 +14,13 @@ class PetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => 'required|string',
+            'type' => 'sometimes|required|string',
             'breed_visual' => 'nullable|string',
-            'name' => 'required|string',
-            'sex' => 'required|string',
-            'description' => 'required|string',
-            'age_months' => 'required|integer',
-            'size' => 'required|string',
+            'name' => 'sometimes|required|string',
+            'sex' => 'sometimes|required|string',
+            'description' => 'sometimes|required|string',
+            'age_months' => 'sometimes|required|integer',
+            'size' => 'sometimes|required|string',
             'weight_kg' => 'nullable|numeric',
             'color' => 'nullable|string',
             'sterilized' => 'nullable|boolean',

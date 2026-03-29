@@ -66,4 +66,19 @@ class ApplicationController extends Controller
         $applications = Application::with(['user', 'pet'])->get();
         return response()->json($applications);
     }
+    public function destroy(Request $request, $id): JsonResponse
+    {
+        $application = Application::findOrFail($id);
+
+        if ($application->user_id !== $request->user()->id) {
+            return response()->json(['error' => 'Ви не можете видалити чужу заявку.'], 403);
+        }
+
+        if ($application->status === 'approved') {
+            return response()->json(['error' => 'Неможливо видалити вже схвалену заявку.'], 400);
+        }
+
+        $application->delete();
+        return response()->json(['message' => 'Заявку успішно скасовано.']);
+    }
 }
