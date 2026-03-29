@@ -11,6 +11,7 @@ class AiManager
     {
         // 1. Дістаємо з бази тільки ДОСТУПНИХ тварин
         $availablePets = Pet::where('status', 'available')
+            ->limit(10)
             ->get(['id', 'type', 'name', 'age_months', 'size', 'temperament_tags', 'monthly_cost'])
             ->toArray();
 

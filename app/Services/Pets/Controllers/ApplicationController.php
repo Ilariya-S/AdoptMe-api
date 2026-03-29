@@ -70,7 +70,7 @@ class ApplicationController extends Controller
     {
         $application = Application::findOrFail($id);
 
-        if ($application->user_id !== $request->user()->id) {
+        if ($application->user_id !== $request->user()->id && !$request->user()->isAdmin()) {
             return response()->json(['error' => 'Ви не можете видалити чужу заявку.'], 403);
         }
 
@@ -79,6 +79,7 @@ class ApplicationController extends Controller
         }
 
         $application->delete();
-        return response()->json(['message' => 'Заявку успішно скасовано.']);
+
+        return response()->json(['message' => 'Заявку успішно скасовано/видалено.']);
     }
 }

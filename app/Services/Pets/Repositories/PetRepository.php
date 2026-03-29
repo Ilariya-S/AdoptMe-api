@@ -11,6 +11,7 @@ class PetRepository implements PetRepositoryInterface
     public function getAllPublic(): Collection
     {
         return Pet::select(['id', 'name', 'photo_url', 'type', 'breed_visual', 'status', 'age_months'])
+            ->where('status', '!=', 'adopted')
             ->get();
     }
 

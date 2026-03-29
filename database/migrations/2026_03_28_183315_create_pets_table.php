@@ -29,6 +29,7 @@ return new class extends Migration {
             $table->string('photo_url')->nullable();
             $table->integer('monthly_cost')->nullable();
             $table->enum('status', ['available', 'trial', 'adopted'])->default('available');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

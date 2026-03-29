@@ -39,8 +39,14 @@ class ApplicationManager
     {
         DB::transaction(function () use ($application) {
             $this->appRepo->updateStatus($application, 'approved');
+
             $newPetStatus = $application->type === 'trial_day' ? 'trial' : 'adopted';
             $application->pet()->update(['status' => $newPetStatus]);
+
+            Application::where('pet_id', $application->pet_id)
+                ->where('id', '!=', $application->id)
+                ->where('status', 'pending')
+                ->update(['status' => 'rejected']);
         });
 
         return $application->refresh();

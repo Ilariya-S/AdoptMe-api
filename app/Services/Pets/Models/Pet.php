@@ -3,11 +3,12 @@
 namespace App\Services\Pets\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Services\Pets\Models\Application;
 
 class Pet extends Model
 {
-
+    use SoftDeletes;
     protected $guarded = [];
 
     protected $casts = [
