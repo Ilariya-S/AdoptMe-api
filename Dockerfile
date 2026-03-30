@@ -1,10 +1,11 @@
-FROM php:8.2-cli
+FROM php:8.3-cli
 
-# Встановлюємо системні пакети, потрібні для підключення до MySQL (Aiven)
+# Встановлюємо системні пакети (додав кілька додаткових для надійності)
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     libzip-dev \
+    libcurl4-openssl-dev \
     && docker-php-ext-install pdo pdo_mysql zip
 
 # Встановлюємо Composer
@@ -16,10 +17,10 @@ WORKDIR /app
 # Копіюємо всі файли проєкту
 COPY . .
 
-# Встановлюємо PHP-залежності
-RUN composer install --optimize-autoloader --no-dev
+# МАГІЯ ТУТ: додаємо прапорці, щоб ігнорувати жорсткі вимоги до платформи і не запускати зайві скрипти під час збірки
+RUN composer install --optimize-autoloader --no-dev --ignore-platform-reqs --no-scripts
 
-# Вказуємо порт (Render сам підставить потрібний через змінну $PORT)
+# Вказуємо порт
 EXPOSE 10000
 
 # Запускаємо наш скрипт з міграціями і стартуємо сервер
