@@ -20,4 +20,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/applications/my', [ApplicationController::class, 'myApplications']);
     Route::get('/applications', [ApplicationController::class, 'index']);
     Route::delete('/applications/{id}', [ApplicationController::class, 'destroy']);
+    Route::patch('/pets/{id}/return', [PetController::class, 'returnFromTrial']);
 });

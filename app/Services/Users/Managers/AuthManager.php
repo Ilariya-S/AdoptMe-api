@@ -52,4 +52,9 @@ class AuthManager
     {
         $user->currentAccessToken()->delete();
     }
+    public function deleteAccount($user): void
+    {
+        $user->tokens()->delete();
+        $user->delete();
+    }
 }

@@ -11,9 +11,9 @@ class PetManager
     {
     }
 
-    public function getCatalog()
+    public function getCatalog(int $perPage = 15)
     {
-        return $this->petRepo->getAllPublic();
+        return $this->petRepo->getAllPublic($perPage);
     }
 
     public function getDetails(string $id)

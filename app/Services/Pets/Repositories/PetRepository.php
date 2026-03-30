@@ -4,15 +4,15 @@ namespace App\Services\Pets\Repositories;
 
 use App\Services\Pets\Contracts\PetRepositoryInterface;
 use App\Services\Pets\Models\Pet;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class PetRepository implements PetRepositoryInterface
 {
-    public function getAllPublic(): Collection
+    public function getAllPublic(int $perPage = 15): LengthAwarePaginator
     {
         return Pet::select(['id', 'name', 'photo_url', 'type', 'breed_visual', 'status', 'age_months'])
             ->where('status', '!=', 'adopted')
-            ->get();
+            ->paginate($perPage);
     }
 
     public function findById(string $id): ?Pet

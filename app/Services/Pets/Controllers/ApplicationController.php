@@ -50,7 +50,11 @@ class ApplicationController extends Controller
     }
     public function myApplications(Request $request): JsonResponse
     {
-        $applications = Application::with('pet')
+        $applications = Application::with([
+            'pet' => function ($query) {
+                $query->withTrashed();
+            }
+        ])
             ->where('user_id', $request->user()->id)
             ->get();
 
@@ -62,8 +66,13 @@ class ApplicationController extends Controller
         if (!$request->user()->isAdmin()) {
             return response()->json(['message' => 'Доступ заборонено'], 403);
         }
+        $applications = Application::with([
+            'user',
+            'pet' => function ($query) {
+                $query->withTrashed();
+            }
+        ])->get();
 
-        $applications = Application::with(['user', 'pet'])->get();
         return response()->json($applications);
     }
     public function destroy(Request $request, $id): JsonResponse

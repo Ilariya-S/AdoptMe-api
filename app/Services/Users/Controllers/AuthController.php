@@ -40,4 +40,10 @@ class AuthController extends Controller
     {
         return response()->json($request->user());
     }
+    public function destroy(Request $request): JsonResponse
+    {
+        $this->authManager->deleteAccount($request->user());
+
+        return response()->json(['message' => 'Ваш акаунт та всі ваші заявки успішно видалено'], 200);
+    }
 }

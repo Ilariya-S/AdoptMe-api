@@ -19,9 +19,9 @@ class UpdatePetRequest extends FormRequest
             'name' => 'sometimes|required|string',
             'sex' => 'sometimes|required|string',
             'description' => 'sometimes|required|string',
-            'age_months' => 'sometimes|required|integer',
+            'age_months' => 'sometimes|required|integer|min:0',
             'size' => 'sometimes|required|string',
-            'weight_kg' => 'nullable|numeric',
+            'weight_kg' => 'nullable|numeric|min:0',
             'color' => 'nullable|string',
             'sterilized' => 'nullable|boolean',
             'temperament_tags' => 'nullable|array',
@@ -29,7 +29,7 @@ class UpdatePetRequest extends FormRequest
             'medical_conditions' => 'nullable|string',
             'ideal_owner_tags' => 'nullable|array',
             'photo_url' => 'nullable|string',
-            'monthly_cost' => 'nullable|integer',
+            'monthly_cost' => 'nullable|integer|min:0',
         ];
     }
 }

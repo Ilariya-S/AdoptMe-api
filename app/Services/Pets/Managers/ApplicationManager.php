@@ -15,9 +15,9 @@ class ApplicationManager
 
     public function submitApplication(array $data, int $userId)
     {
-        $pet = Pet::find($data['pet_id']);
-        if ($pet->status === 'adopted') {
-            abort(400, 'Ця тваринка вже знайшла свій дім!');
+        $pet = Pet::findOrFail($data['pet_id']);
+        if ($pet->status !== 'available') {
+            abort(400, 'Ця тваринка наразі недоступна для нових заявок!');
         }
 
         $existingApp = Application::where('user_id', $userId)
@@ -54,9 +54,13 @@ class ApplicationManager
     public function rejectApplication(Application $application)
     {
         DB::transaction(function () use ($application) {
+            $wasApproved = $application->status === 'approved';
+
             $this->appRepo->updateStatus($application, 'rejected');
 
-            $application->pet()->update(['status' => 'available']);
+            if ($wasApproved) {
+                $application->pet()->update(['status' => 'available']);
+            }
         });
 
         return $application->refresh();

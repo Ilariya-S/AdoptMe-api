@@ -16,9 +16,11 @@ class PetController extends Controller
     {
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $pets = Pet::where('status', '!=', 'adopted')->get();
+        $perPage = $request->query('per_page', 15);
+        $pets = $this->petManager->getCatalog($perPage);
+
         return response()->json($pets);
     }
 
@@ -65,5 +67,24 @@ class PetController extends Controller
 
         $pet->delete();
         return response()->json(['message' => 'Тваринку успішно видалено.']);
+    }
+    public function returnFromTrial(Request $request, $id): JsonResponse
+    {
+        if (!$request->user()->isAdmin()) {
+            return response()->json(['error' => 'Тільки адміністратор може повертати тварин.'], 403);
+        }
+
+        $pet = Pet::findOrFail($id);
+
+        if ($pet->status !== 'trial') {
+            return response()->json(['error' => 'Ця тваринка не знаходиться на випробувальному терміні.'], 400);
+        }
+
+        $pet->update(['status' => 'available']);
+
+        return response()->json([
+            'message' => 'Тваринку успішно повернуто в каталог!',
+            'pet' => $pet
+        ]);
     }
 }
