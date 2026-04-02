@@ -10,7 +10,7 @@ class PetRepository implements PetRepositoryInterface
 {
     public function getAllPublic(int $perPage = 15): LengthAwarePaginator
     {
-        return Pet::select(['id', 'name', 'photo_url', 'type', 'breed_visual', 'status', 'age_months'])
+        return Pet::select(['id', 'name', 'photo_url', 'type', 'breed_visual', 'status', 'age_months', 'temperament_tags', 'monthly_cost'])
             ->where('status', '!=', 'adopted')
             ->paginate($perPage);
     }
