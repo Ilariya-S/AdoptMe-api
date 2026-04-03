@@ -19,7 +19,7 @@ class DonationServiceProvider extends BaseServiceProvider
      */
     public function boot(): void
     {
-        $this->loadApiRoutes(__DIR__ . '/../Routes/routes.php');
+        $this->loadApiRoutes(__DIR__ . '/Routes/routes.php');
 
     }
 }
