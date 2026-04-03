@@ -7,7 +7,7 @@ use App\Services\Pets\Models\Pet;
 
 class AiManager
 {
-    public function getChatResponse(array $userMessages): string
+    public function getChatResponse(array $userMessages): array
     {
         // 1. Дістаємо з бази тільки ДОСТУПНИХ тварин
         $availablePets = Pet::where('status', 'available')
@@ -69,7 +69,7 @@ class AiManager
         $messagesForApi = array_merge($messagesForApi, $userMessages);
 
         $response = Http::withToken(env('GROQ_API_KEY'))
-            ->timeout(10)
+            ->timeout(15)
             ->post('https://api.groq.com/openai/v1/chat/completions', [
                 'model' => 'llama-3.1-8b-instant',
                 'messages' => $messagesForApi,
@@ -77,16 +77,20 @@ class AiManager
                 'response_format' => ['type' => 'json_object']
             ]);
 
-        $content = $response->json('choices.0.message.content');
-        return json_decode($content, true);
-
-
-
         if ($response->failed()) {
             info('Groq Error: ' . $response->body());
-            return "Вибачте, я зараз трохи перевантажений. Спробуйте написати ще раз!";
+            return [
+                'reply' => "Вибачте, я зараз трохи перевантажений. Спробуйте написати ще раз!",
+                'suggested_pet_ids' => []
+            ];
         }
 
-        return $response->json('choices.0.message.content');
+        $content = $response->json('choices.0.message.content');
+        $decoded = json_decode($content, true);
+
+        return $decoded ?? [
+            'reply' => "Помилка формату відповіді.",
+            'suggested_pet_ids' => []
+        ];
     }
 }
