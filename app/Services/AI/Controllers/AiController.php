@@ -16,11 +16,11 @@ class AiController extends Controller
     public function chat(ChatRequest $request): JsonResponse
     {
         $messages = $request->validated()['messages'];
-
-        $reply = $this->aiManager->getChatResponse($messages);
+        $aiResponse = $this->aiManager->getChatResponse($messages);
 
         return response()->json([
-            'reply' => $reply
+            'reply' => $aiResponse['reply'] ?? 'Помилка генерації',
+            'suggested_pet_ids' => $aiResponse['suggested_pet_ids'] ?? []
         ]);
     }
 }
