@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Services\AI\Controllers\AiController;
+use App\Services\Donation\DonationController;
 
-Route::prefix('ai')->group(function () {
-    Route::post('/chat', [AiController::class, 'chat'])->middleware('throttle:15,1');
-});
+Route::post('/donate', [DonationController::class, 'generatePayment']);
